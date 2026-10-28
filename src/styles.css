@@ -97,8 +97,11 @@ section h3 { font-size: 14px; margin: 0 0 8px; color: var(--muted); font-weight:
 .board {
   display: grid; gap: 3px; padding: 6px;
   background: var(--panel); border-radius: 12px; border: 1px solid var(--line);
-  touch-action: manipulation; user-select: none;
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
 }
+.board.x-on .cell:not(.filled) { cursor: crosshair; }
+.lclue.block { cursor: pointer; }
+.tools button.armed { border-color: var(--ink); box-shadow: 0 0 0 2px var(--ink) inset; }
 .board.sketch-on { border-color: var(--sketch); box-shadow: 0 0 0 2px var(--sketch); }
 .cell {
   aspect-ratio: 1; border: 0; border-radius: 5px; background: var(--empty);
@@ -116,6 +119,7 @@ section h3 { font-size: 14px; margin: 0 0 8px; color: var(--muted); font-weight:
 .cell.given { box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.18); }
 .cell.wrong { animation: shake 0.4s; background: #3a1d20; }
 .cell.hint { outline: 3px dashed var(--ink); outline-offset: -3px; }
+.cell.pending, .cell.pending:hover { background: color-mix(in srgb, var(--c) 35%, var(--empty)); outline: 3px solid var(--c); outline-offset: -3px; }
 .clue small { font-size: 0.6em; opacity: 0.85; }
 .clue.preview { color: var(--muted); opacity: 0.85; font-size: 0.85em; }
 .concealed { opacity: 0.45; font-weight: 600; }
