@@ -25,10 +25,18 @@ body {
   color: var(--ink);
   font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+  min-height: 100dvh;
 }
-button { font: inherit; color: inherit; cursor: pointer; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
 button:disabled { cursor: default; opacity: 0.45; }
-.app { max-width: 560px; margin: 0 auto; padding: 16px; }
+/* 노치·홈 표시줄이 있는 기기와 홈 화면 앱(standalone)에서도 내용이 가리지 않게 한다 */
+.app {
+  max-width: 560px; margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
 header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 header h1 { font-size: 20px; letter-spacing: -0.02em; margin: 0; }
 header small { color: var(--muted); }
@@ -94,7 +102,11 @@ section h3 { font-size: 14px; margin: 0 0 8px; color: var(--muted); font-weight:
 .stats { display: flex; justify-content: space-between; margin: 14px 2px 8px; font-variant-numeric: tabular-nums; color: var(--muted); }
 .lives { color: #e8505b; letter-spacing: 2px; }
 .lives i { color: var(--line); font-style: normal; }
+/* 판 너비 = 화면 너비와 (남는 높이 × 판 비율) 중 작은 값 */
+.play-main { --fit: calc((100dvh - 330px) * var(--ratio)); }
+.play-main .stats, .board { width: min(100%, max(var(--fit), 240px)); margin-left: auto; margin-right: auto; }
 .board {
+  container-type: inline-size;
   display: grid; gap: 3px; padding: 6px;
   background: var(--panel); border-radius: 12px; border: 1px solid var(--line);
   touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
@@ -106,10 +118,12 @@ section h3 { font-size: 14px; margin: 0 0 8px; color: var(--muted); font-weight:
 .cell {
   aspect-ratio: 1; border: 0; border-radius: 5px; background: var(--empty);
   position: relative; padding: 0; display: grid; place-items: center; min-width: 0;
-  font-size: min(calc(56vw / var(--cols)), 22px); font-weight: 700;
+  font-size: min(calc(46cqi / var(--cols)), 26px); font-weight: 700;
   transition: transform 0.08s, background 0.15s;
 }
-.cell:not(.filled):hover { outline: 2px solid var(--line); }
+@media (hover: hover) {
+  .cell:not(.filled):hover { outline: 2px solid var(--line); }
+}
 .cell:active { transform: scale(0.94); }
 .cell.filled { background: var(--c); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35); }
 .cell.sketched {
@@ -131,7 +145,7 @@ section h3 { font-size: 14px; margin: 0 0 8px; color: var(--muted); font-weight:
 .marks .sk { opacity: 0.55; text-decoration: underline dotted var(--sketch); }
 .lclue, .corner {
   display: grid; place-items: center; font-weight: 700; color: var(--ink);
-  font-size: min(calc(48vw / var(--cols)), 18px); gap: 1px;
+  font-size: min(calc(38cqi / var(--cols)), 20px); gap: 1px;
 }
 .corner { font-size: 10px; color: var(--muted); font-weight: 600; }
 .lclue i { width: 0.6em; height: 0.6em; border-radius: 50%; display: block; }
@@ -156,8 +170,34 @@ section h3 { font-size: 14px; margin: 0 0 8px; color: var(--muted); font-weight:
 .rule-toggle { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 14px; cursor: pointer; flex-wrap: wrap; }
 .rule-toggle small { color: var(--muted); }
 .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); display: grid; place-items: center; padding: 16px; }
-.modal { background: var(--panel); padding: 24px 28px; border-radius: 16px; text-align: center; }
+.modal { background: var(--panel); padding: 24px 28px; border-radius: 16px; text-align: center; width: 100%; max-width: 360px; }
 .modal h2 { margin: 0 0 8px; }
 .modal-actions { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
 .modal-actions button { padding: 8px 18px; border-radius: 999px; border: 0; background: var(--ink); color: var(--bg); }
 .modal-actions button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+
+/* 터치 기기: 누르기 쉬운 크기, 단축키 안내 숨김 */
+@media (pointer: coarse) {
+  .chips button, .tools button, .worlds button { min-height: 40px; padding: 8px 14px; }
+  .back { min-height: 40px; }
+  .help .keys { display: none; }
+}
+
+/* 가로로 넓은 화면(태블릿·PC·가로 폰): 판은 왼쪽, 팔레트와 도구는 오른쪽 */
+@media (min-width: 560px) and (min-aspect-ratio: 5/4) {
+  .app.puzzle { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 340px); gap: 24px; align-items: start; }
+  .play-main { --fit: calc((100dvh - 130px) * var(--ratio)); }
+  .play-side { position: sticky; top: 16px; max-height: calc(100dvh - 32px); overflow-y: auto; }
+  .play-side .palette { margin-top: 0; }
+}
+
+/* 높이가 낮은 화면(가로 폰): 머리글과 여백을 줄인다 */
+@media (max-height: 500px) {
+  .app.puzzle { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  .puzzle header h1 { font-size: 16px; }
+  .puzzle header small { display: none; }
+  .puzzle .stats { margin: 6px 2px 4px; }
+  .play-main { --fit: calc((100dvh - 90px) * var(--ratio)); }
+  .swatch { width: 40px; height: 40px; }
+}

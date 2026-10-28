@@ -439,6 +439,9 @@ export default function PuzzleScreen({ config, title, onExit, onResult, onNext, 
         </div>
       </header>
 
+      <div className="play">
+      {/* 판은 화면 너비와 높이 중 좁은 쪽에 맞춘다(--ratio = 판의 가로/세로 비) */}
+      <div className="play-main" style={{ '--ratio': (p.w + (hasLines ? 0.7 : 0)) / (p.h + (hasLines ? 0.8 : 0)) }}>
       <div className="stats">
         <span className="lives">{'♥'.repeat(Math.max(g.lives, 0))}<i>{'♥'.repeat(MAX_LIVES - Math.max(g.lives, 0))}</i></span>
         <span>남은 칸 {remaining}</span>
@@ -449,7 +452,7 @@ export default function PuzzleScreen({ config, title, onExit, onResult, onNext, 
         className={'board' + (sketchOn ? ' sketch-on' : '') + (xMode ? ' x-on' : '')}
         style={{
           gridTemplateColumns: `${hasLines ? 'minmax(20px, 0.7fr) ' : ''}repeat(${p.w}, minmax(0, 1fr))`,
-          '--cols': p.w + (hasLines ? 1 : 0),
+          '--cols': p.w + (hasLines ? 0.7 : 0),
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -459,7 +462,9 @@ export default function PuzzleScreen({ config, title, onExit, onResult, onNext, 
       >
         {boardChildren}
       </div>
+      </div>
 
+      <div className="play-side">
       <div className="palette">
         {Array.from({ length: p.colors }, (_, k) => (
           <button
@@ -501,8 +506,10 @@ export default function PuzzleScreen({ config, title, onExit, onResult, onNext, 
         X 표시를 켜고 누르거나 끌면 X를 칠하고 지웁니다. X가 있는 칸을 그 색으로 누르면 X가 먼저 지워집니다.
         열린 칸을 두 번 누르면 그 칸 범위의 빈칸에, 색이 있는 줄 단서를 두 번 누르면 그 줄에 X를 붙이거나 뗍니다.
         자동 칠하기는 두 번 눌러야 하며, 색이 하나만 남은 칸을 모두 칠합니다. 터치 안전을 켜면 같은 칸을 두 번 눌러야 칠해집니다.
-        <br />단축키: 1–{p.colors} 색 · X 표시 · A 자동 칠하기 · S 스케치 · Z 스케치 되돌리기 · H 힌트 · T 터치 안전
+        <span className="keys"><br />단축키: 1–{p.colors} 색 · X 표시 · A 자동 칠하기 · S 스케치 · Z 스케치 되돌리기 · H 힌트 · T 터치 안전</span>
       </p>
+      </div>
+      </div>
 
       {status !== 'play' && !g.closed && (
         <div className="overlay">
