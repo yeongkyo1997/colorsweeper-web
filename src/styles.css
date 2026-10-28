@@ -119,11 +119,10 @@ section h3 { font-size: 14px; margin: 0 0 8px; color: var(--muted); font-weight:
 .clue small { font-size: 0.6em; opacity: 0.85; }
 .clue.preview { color: var(--muted); opacity: 0.85; font-size: 0.85em; }
 .concealed { opacity: 0.45; font-weight: 600; }
-.symbol {
-  position: absolute; top: 2px; left: 2px; font-size: 0.6em; line-height: 1; padding: 1px 3px;
-  border-radius: 4px; background: rgba(0, 0, 0, 0.55); color: #fff; text-shadow: none;
-}
-.symbol.couple { left: auto; right: 2px; color: #ffcf4d; }
+.clue.mark { font-size: 0.95em; }
+.clue.rune { font-size: 0.9em; font-weight: 400; }
+.lclue.duo { font-style: italic; }
+.lclue.hidden { color: var(--muted); }
 .marks { display: flex; flex-wrap: wrap; justify-content: center; font-size: 0.55em; line-height: 1; }
 .marks .sk { opacity: 0.55; text-decoration: underline dotted var(--sketch); }
 .lclue, .corner {

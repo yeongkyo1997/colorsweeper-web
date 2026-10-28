@@ -5,6 +5,9 @@ import { CELL_RULES, LINE_RULES, SPECIAL_RULES, describeConfig } from '../engine
 
 export const PALETTE = ['#e8505b', '#2f9bdc', '#f6c344', '#3dbf7a', '#9b6be0'];
 const MAX_LIVES = 3;
+// DIRS8 순서(북쪽부터 시계 방향)
+const COUPLE_MARKS = ['▲', '◥', '▶', '◢', '▼', '◣', '◀', '◤'];
+const SYMMETRY_MARKS = ['⇧', '⬀', '⇨', '⬂', '⇩', '⬃', '⇦', '⬁'];
 
 const freshGame = (p) => ({
   filled: p.given.slice(),
@@ -167,6 +170,10 @@ export default function PuzzleScreen({ config, title, onExit, onResult, onNext, 
 
   const clueContent = (i) => {
     const cl = p.clues[i];
+    // 원본처럼 커플·대칭·패턴 표시는 칠한 뒤에만 보이고, 그 칸의 숫자를 대신한다
+    if (cl.type === 'couple') return <span className="clue mark couple">{COUPLE_MARKS[cl.dir]}</span>;
+    if (cl.type === 'symmetry') return <span className="clue mark sym">{SYMMETRY_MARKS[cl.dir]}</span>;
+    if (cl.type === 'pattern') return <span className="clue mark rune">{cl.rune}</span>;
     if (cl.type !== 'count') return null;
     if (g.peek.includes(i)) {
       return <span className="clue">{clueLabel(cl)}{cl.disguised && <small>={cl.shown / 2}</small>}</span>;
@@ -208,8 +215,6 @@ export default function PuzzleScreen({ config, title, onExit, onResult, onNext, 
             })}
           </span>
         )}
-        {p.symbols[i] && <span className="symbol">{p.symbols[i]}</span>}
-        {cl.type === 'couple' && <span className="symbol couple">▲</span>}
       </button>
     );
   };
@@ -217,9 +222,9 @@ export default function PuzzleScreen({ config, title, onExit, onResult, onNext, 
   const lineClueEl = (lc) => {
     const done = lc.cells.every((j) => filled[j] >= 0);
     return (
-      <div key={`${lc.axis}${lc.index}`} className={`lclue ${lc.axis}${done ? ' done' : ''}`}>
+      <div key={`${lc.axis}${lc.index}`} className={`lclue ${lc.axis} ${lc.kind}${done ? ' done' : ''}${lc.hidden ? ' hidden' : ''}`}>
         {lc.kind === 'block' && <i style={{ background: PALETTE[lc.color] }} />}
-        {lc.value}
+        {lc.hidden && status === 'play' ? '?' : lc.shown ?? lc.value}
       </div>
     );
   };
